@@ -30,6 +30,21 @@ namespace WikiApp
             InitializeComponent();
         }
 
+        private void InitaliseArray()
+        {
+            // Loop through each row
+            for (int i = 0; i < rows; i++)
+            {
+                // Loop through each column
+                for (int j = 0; j < columns; j++)
+                {
+                    // Initialize the element at [i, j] to an empty string
+                    wikiArray[i, j] = "";
+                }
+            }
+        }
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -37,8 +52,8 @@ namespace WikiApp
 
         private void FormTwoDimAraysLoad(object sender, EventArgs e)
         {
-            //InitaliseArray();
-
+            InitaliseArray();
+            DisplayListViewArray();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -51,7 +66,8 @@ namespace WikiApp
                 // Store information from the 4 textboxes into the 2d array
                 for (int i = 0; i < columns; i++)
                 {
-                    wikiArray[currentRow, i] = wikiArray[currentRow, i] = textBoxes;
+                    wikiArray[currentRow, i] = textBoxes;
+
                 }
 
                 // Move to next row
@@ -68,7 +84,7 @@ namespace WikiApp
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -100,21 +116,44 @@ namespace WikiApp
                 {
                     using (var write = new BinaryWriter(stream, Encoding.UTF8, false))
                     {
-                        for(int x = 0; x < rows; x++)
+                        for (int x = 0; x < rows; x++)
                         {
-                            for(int y = 0; y < columns; y++)
+                            for (int y = 0; y < columns; y++)
                             {
-                                //writer.Write(bikes[x, y]);
+                                write.Write(wikiArray[x, y]);
                             }
                         }
                     }
                 }
             }
-            catch(IOException ex)
+            catch (IOException ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void DisplayListViewArray()
+        {
+            // Clear existing items in the ListView
+            listView.Items.Clear();
+
+            // Loop through each row in the wikiArray
+            for (int i = 0; i < rows; i++)
+            {
+                // Create a new ListViewItem to represent each row
+                ListViewItem item = new ListViewItem();
+
+                // Add sub-items (columns) to the ListViewItem
+                for (int j = 0; j < columns; j++)
+                {
+                    item.SubItems.Add(wikiArray[i, j]);
+                }
+
+                // Add the ListViewItem to the ListView
+                listView.Items.Add(item);
+            }
+        }
+
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -137,17 +176,15 @@ namespace WikiApp
                 {
                     using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                     {
-                        //ptr = 0;
-                        //Array.Clear(bikes, 0, row);
                         while (stream.Position < stream.Length)
                         {
-                            for(int y = 0; y < columns; y++)
+                            for (int y = 0; y < columns; y++)
                             {
-                                //bikes[ptr, y] = reader.ReadString();
+                                wikiArray[currentRow, y] = reader.ReadString();
                             }
-                            //ptr++;
+                            currentRow++;
                         }
-                        
+
                         // read data
                     }
                 }
@@ -157,8 +194,20 @@ namespace WikiApp
         private void btnEdit_Click(object sender, EventArgs e)
         {
             // 9.3 edit button
+            if (currentRow >= 0)
+            {
+                wikiArray[currentRow, 0] = textBox1.Text;
+                wikiArray[currentRow, 1] = textBox2.Text;
+                wikiArray[currentRow, 2] = textBox3.Text;
+                wikiArray[currentRow, 3] = textBox4.Text;
+                MessageBox.Show("Row " + (currentRow + 1) + " updated successfully!");
+            }
+            else
+            {
+                MessageBox.Show("Please select a row to edit.");
+            }
 
+            DisplayListViewArray();
         }
-        //DisplayListViewArray();
     }
 }
