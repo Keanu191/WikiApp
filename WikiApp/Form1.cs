@@ -209,5 +209,11 @@ namespace WikiApp
 
             DisplayListViewArray();
         }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            // 9.4 delete button
+
+        }
     }
 }
