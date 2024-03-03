@@ -84,7 +84,14 @@ namespace WikiApp
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (listView.SelectedItems.Count > 0)
+            {
+                currentRow = listView.SelectedIndices[0];
+            }
+            else
+            {
+                currentRow = -1; // no row selected
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -193,26 +200,78 @@ namespace WikiApp
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            // 9.3 edit button
-            if (currentRow >= 0)
+            // Check if a row is selected
+            if (currentRow >= 0 && currentRow < rows)
             {
+                // Update the wikiArray with the new values from the textboxes
                 wikiArray[currentRow, 0] = textBox1.Text;
                 wikiArray[currentRow, 1] = textBox2.Text;
                 wikiArray[currentRow, 2] = textBox3.Text;
                 wikiArray[currentRow, 3] = textBox4.Text;
+
+                // Refresh the ListView to reflect the changes
+                DisplayListViewArray();
+
+                // Provide feedback to the user
                 MessageBox.Show("Row " + (currentRow + 1) + " updated successfully!");
             }
             else
             {
                 MessageBox.Show("Please select a row to edit.");
             }
-
-            DisplayListViewArray();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
             // 9.4 delete button
+
+            // Display Message if no items selected to delete
+            if (listView.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("You have not selected anything to delete!");
+            }
+
+            // Check if there's an item selected in the ListView
+            if (listView.SelectedItems.Count > 0)
+            {
+                // Assuming that the first selected item is the one to be deleted
+                int selectedIndex = listView.SelectedIndices[0];
+
+                // Shift everything after the selected one, up by one
+                for (int i = selectedIndex; i < rows - 1; i++)
+                {
+                    for (int j = 0; j < columns; j++)
+                    {
+                        wikiArray[i, j] = wikiArray[i + 1, j];
+                    }
+                }
+
+                // clear last row
+                for (int j = 0; j < columns; j++)
+                {
+                    wikiArray[rows - 1, j] = "";
+                }
+
+                // Decrease the currentRow if it's the last row
+                if (currentRow == rows - 1)
+                {
+                    currentRow--;
+                }
+
+                // Refresh the ListView
+                DisplayListViewArray();
+
+                MessageBox.Show("Row deleted successfully!");
+            }
+            else
+            {
+                MessageBox.Show("Nothing has been selected to delete!");
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            // 9.5 Clear button
 
         }
     }
