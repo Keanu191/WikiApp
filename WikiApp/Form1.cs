@@ -273,6 +273,25 @@ namespace WikiApp
         {
             // 9.5 Clear button
 
+            // check if textboxes are already clear
+            if (textBox1.Text == "" && textBox2.Text == "" && textBox3.Text == "" && textBox4.Text == "")
+            {
+                MessageBox.Show("Textboxes are already clear!");
+                toolStripStatusLabel1.Text = "Textboxes are already clear!";
+            }
+            else
+            {
+                // Clear all text boxes when button is clicked
+                textBox1.Clear();
+                textBox2.Clear();
+                textBox3.Clear();
+                textBox4.Clear();
+
+                // display popup when text boxes are cleared
+                MessageBox.Show("Textboxes cleared!");
+                toolStripStatusLabel1.Text = "TextBoxes cleared";
+            }
+            
         }
     }
 }
