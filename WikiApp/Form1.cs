@@ -79,6 +79,8 @@ namespace WikiApp
             {
                 MessageBox.Show("2D Array is full!");
             }
+            BubbleSort();
+            DisplayListViewArray();
 
         }
 
@@ -160,6 +162,46 @@ namespace WikiApp
                 listView.Items.Add(item);
             }
         }
+
+        private void SwapRows(int row1, int row2)
+        {
+            // 9.6 seperate swap method
+            // Loop through each column in the rows being swapped
+            for (int j = 0; j < columns; j++)
+            {
+                // Temporary variable to hold the value of the element being swapped
+                string swap = wikiArray[row1, j];
+                // Swap the elements by assigning the value of one element to the other
+                wikiArray[row1, j] = wikiArray[row2, j];
+                wikiArray[row2, j] = swap;
+            }
+        }
+
+        private void BubbleSort()
+        {
+            // 9.6 bubble sort
+            bool swapped; // to indicate if any swaps were made in the current pass
+            do
+            {
+                // reset the bool for the next pass
+                swapped = false;
+                // loop through each row except for the last one
+                for (int i = 0; i < rows - 1; i++)
+                {
+                    // compare the names in the first column of the current row and the next row
+                    // if the current rows name is alphabetically after the next row's name, swap the rows
+                    if (wikiArray[i, 0].CompareTo(wikiArray[i + 1, 0]) > 0)
+                    {
+                        // swap the rows
+                        SwapRows(i, i + 1);
+                        // set the bool to true indicating that the swap was made
+                        swapped = true;
+                    }
+                }
+                // continue loop until no more swaps are required
+            } while (swapped);
+        }
+
 
 
         private void button6_Click(object sender, EventArgs e)
@@ -291,7 +333,8 @@ namespace WikiApp
                 MessageBox.Show("Textboxes cleared!");
                 toolStripStatusLabel1.Text = "TextBoxes cleared";
             }
-            
+
         }
     }
 }
+
