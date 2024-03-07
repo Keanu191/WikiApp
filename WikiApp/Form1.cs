@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -86,9 +87,15 @@ namespace WikiApp
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // 9.8 method to select definition from list view
             if (listView.SelectedItems.Count > 0)
             {
                 currentRow = listView.SelectedIndices[0];
+                // Display the selected definition's info in the text boxes
+                textBox1.Text = wikiArray[currentRow, 0]; // Data Structure Name
+                textBox2.Text = wikiArray[currentRow, 1]; // Category
+                textBox3.Text = wikiArray[currentRow, 2]; // Structure
+                textBox4.Text = wikiArray[currentRow, 3]; // Definition
             }
             else
             {
@@ -143,6 +150,7 @@ namespace WikiApp
 
         private void DisplayListViewArray()
         {
+            // 9.9 method to select a deifnition from listview
             // Clear existing items in the ListView
             listView.Items.Clear();
 
@@ -150,13 +158,8 @@ namespace WikiApp
             for (int i = 0; i < rows; i++)
             {
                 // Create a new ListViewItem to represent each row
-                ListViewItem item = new ListViewItem();
-
-                // Add sub-items (columns) to the ListViewItem
-                for (int j = 0; j < columns; j++)
-                {
-                    item.SubItems.Add(wikiArray[i, j]);
-                }
+                ListViewItem item = new ListViewItem(wikiArray[i, 0]); // Name
+                item.SubItems.Add(wikiArray[i, 1]); // Category
 
                 // Add the ListViewItem to the ListView
                 listView.Items.Add(item);
@@ -179,6 +182,12 @@ namespace WikiApp
 
         private void BubbleSort()
         {
+            if (wikiArray == null)
+            {
+                // Handle null array
+                return;
+            }
+
             // 9.6 bubble sort
             bool swapped; // to indicate if any swaps were made in the current pass
             do
@@ -190,7 +199,7 @@ namespace WikiApp
                 {
                     // compare the names in the first column of the current row and the next row
                     // if the current rows name is alphabetically after the next row's name, swap the rows
-                    if (wikiArray[i, 0].CompareTo(wikiArray[i + 1, 0]) > 0)
+                    if (wikiArray[i, 0] != null && wikiArray[i + 1, 0] != null && wikiArray[i, 0].CompareTo(wikiArray[i + 1, 0]) > 0)
                     {
                         // swap the rows
                         SwapRows(i, i + 1);
@@ -334,6 +343,71 @@ namespace WikiApp
                 toolStripStatusLabel1.Text = "TextBoxes cleared";
             }
 
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            // 9.7 Binary Search
+
+            string searchName = textBox5.Text.Trim();
+
+            if (searchName == "")
+            {
+                MessageBox.Show("Please enter a name to search!");
+                toolStripStatusLabel1.Text = "Please enter a name to search!";
+            }
+            else
+            {
+                int foundIndex = BinarySearch(searchName);
+                if (foundIndex != -1)
+                {
+                    // Display the found information in the textboxes
+                    textBox1.Text = wikiArray[foundIndex, 0]; // Data Structure Name
+                    textBox2.Text = wikiArray[foundIndex, 1]; // Category
+                    textBox3.Text = wikiArray[foundIndex, 2]; // Structure
+                    textBox4.Text = wikiArray[foundIndex, 3]; // Definition
+
+                    MessageBox.Show("Information found!");
+                    toolStripStatusLabel1.Text = "Information found!";
+                }
+                else
+                {
+                    MessageBox.Show("Name not found!");
+                    toolStripStatusLabel1.Text = "Name not found!";
+                    textBox5.Clear(); // clear the search text box
+                }
+            }
+
+        }
+
+        private int BinarySearch(string searchName)
+        {
+            // 9.7 Binary Search
+
+            if (wikiArray == null || wikiArray.Length == 0)
+            {
+                return -1; // Array is null or empty, name not found
+            }
+
+            int min = 0;
+            int max = rows - 1;
+            while (min <= max)
+            {
+                int mid = (min + max) / 2;
+                if (wikiArray[mid, 0].Equals(searchName))
+                {
+                    return mid; // name found
+                }
+                else if (wikiArray[mid, 0].CompareTo(searchName) < 0)
+                {
+                    min = mid + 1;
+                }
+                else
+                {
+                    max = mid - 1;
+                }
+            }
+            return -1; // Name not found
         }
     }
 }
