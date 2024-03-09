@@ -87,20 +87,7 @@ namespace WikiApp
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // 9.8 method to select definition from list view
-            if (listView.SelectedItems.Count > 0)
-            {
-                currentRow = listView.SelectedIndices[0];
-                // Display the selected definition's info in the text boxes
-                textBox1.Text = wikiArray[currentRow, 0]; // Data Structure Name
-                textBox2.Text = wikiArray[currentRow, 1]; // Category
-                textBox3.Text = wikiArray[currentRow, 2]; // Structure
-                textBox4.Text = wikiArray[currentRow, 3]; // Definition
-            }
-            else
-            {
-                currentRow = -1; // no row selected
-            }
+           
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -150,20 +137,7 @@ namespace WikiApp
 
         private void DisplayListViewArray()
         {
-            // 9.9 method to select a deifnition from listview
-            // Clear existing items in the ListView
-            listView.Items.Clear();
-
-            // Loop through each row in the wikiArray
-            for (int i = 0; i < rows; i++)
-            {
-                // Create a new ListViewItem to represent each row
-                ListViewItem item = new ListViewItem(wikiArray[i, 0]); // Name
-                item.SubItems.Add(wikiArray[i, 1]); // Category
-
-                // Add the ListViewItem to the ListView
-                listView.Items.Add(item);
-            }
+         
         }
 
         private void SwapRows(int row1, int row2)
@@ -182,6 +156,7 @@ namespace WikiApp
 
         private void BubbleSort()
         {
+            // 9.6 bubble sort
             if (wikiArray == null)
             {
                 // Handle null array
@@ -347,68 +322,10 @@ namespace WikiApp
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            // 9.7 Binary Search
-
-            string searchName = textBox5.Text.Trim();
-
-            if (searchName == "")
-            {
-                MessageBox.Show("Please enter a name to search!");
-                toolStripStatusLabel1.Text = "Please enter a name to search!";
-            }
-            else
-            {
-                int foundIndex = BinarySearch(searchName);
-                if (foundIndex != -1)
-                {
-                    // Display the found information in the textboxes
-                    textBox1.Text = wikiArray[foundIndex, 0]; // Data Structure Name
-                    textBox2.Text = wikiArray[foundIndex, 1]; // Category
-                    textBox3.Text = wikiArray[foundIndex, 2]; // Structure
-                    textBox4.Text = wikiArray[foundIndex, 3]; // Definition
-
-                    MessageBox.Show("Information found!");
-                    toolStripStatusLabel1.Text = "Information found!";
-                }
-                else
-                {
-                    MessageBox.Show("Name not found!");
-                    toolStripStatusLabel1.Text = "Name not found!";
-                    textBox5.Clear(); // clear the search text box
-                }
-            }
+           
 
         }
 
-        private int BinarySearch(string searchName)
-        {
-            // 9.7 Binary Search
-
-            if (wikiArray == null || wikiArray.Length == 0)
-            {
-                return -1; // Array is null or empty, name not found
-            }
-
-            int min = 0;
-            int max = rows - 1;
-            while (min <= max)
-            {
-                int mid = (min + max) / 2;
-                if (wikiArray[mid, 0].Equals(searchName))
-                {
-                    return mid; // name found
-                }
-                else if (wikiArray[mid, 0].CompareTo(searchName) < 0)
-                {
-                    min = mid + 1;
-                }
-                else
-                {
-                    max = mid - 1;
-                }
-            }
-            return -1; // Name not found
-        }
     }
 }
 

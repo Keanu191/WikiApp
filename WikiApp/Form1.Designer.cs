@@ -48,17 +48,23 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.nameCategory = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Category = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // listView
             // 
+            this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.nameCategory,
+            this.Category});
             this.listView.HideSelection = false;
             this.listView.Location = new System.Drawing.Point(458, 12);
             this.listView.Name = "listView";
             this.listView.Size = new System.Drawing.Size(260, 318);
             this.listView.TabIndex = 0;
             this.listView.UseCompatibleStateImageBehavior = false;
+            this.listView.View = System.Windows.Forms.View.Details;
             this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
             // 
             // label1
@@ -228,6 +234,16 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
+            // nameCategory
+            // 
+            this.nameCategory.Text = "Name";
+            this.nameCategory.Width = 116;
+            // 
+            // Category
+            // 
+            this.Category.Text = "Category";
+            this.Category.Width = 194;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -284,5 +300,7 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ColumnHeader nameCategory;
+        private System.Windows.Forms.ColumnHeader Category;
     }
 }
