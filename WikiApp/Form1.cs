@@ -25,30 +25,34 @@ namespace WikiApp
 
 
         // Global 2D string array 9.1
+        // create a 2d array to store data
         public static string[,] wikiArray = new string[rows, columns];
         public Form1()
         {
             InitializeComponent();
         }
 
+        // initalise the array with empty strings
         private void InitaliseArray()
         {
-            // Loop through each row
+            // Loop through each row and column to initalise elements to empty  strings
             for (int i = 0; i < rows; i++)
             {
                 // Loop through each column
                 for (int j = 0; j < columns; j++)
                 {
                     // Initialize the element at [i, j] to an empty string
-                    wikiArray[i, j] = "";
+                    wikiArray[i, j] = ""; 
                 }
             }
         }
 
-
+        // method to fill the array and show it in the listview when the wiki app/form loads
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            // Initialise the array and display it in the ListView when the form loads
+            InitaliseArray();
+            InitializeListView(listView);
         }
 
         private void FormTwoDimAraysLoad(object sender, EventArgs e)
@@ -57,49 +61,63 @@ namespace WikiApp
             DisplayListViewArray();
         }
 
+        // method to handle adding new items to the array
         private void btnAdd_Click(object sender, EventArgs e)
         {
             // 9.2 Add button
             if (currentRow < rows)
             {
-                string textBoxes = textBox1.Text + textBox2.Text + textBox3.Text + textBox4.Text; // Combine all textboxes together into a string
-
-                // Store information from the 4 textboxes into the 2d array
-                for (int i = 0; i < columns; i++)
+                bool Added = false; // flag to track if the item is successfully added
+                // check if the textboxes are empty
+                if (!string.IsNullOrEmpty(textBox1.Text) && !string.IsNullOrEmpty(textBox2.Text) && !string.IsNullOrEmpty(textBox3.Text) && !string.IsNullOrEmpty(textBox4.Text))
                 {
-                    wikiArray[currentRow, i] = textBoxes;
-
+                    // Assign textbox values to the corresponding position in the 2d array
+                    wikiArray[currentRow, 0] = textBox1.Text;
+                    wikiArray[currentRow, 1] = textBox2.Text;
+                    wikiArray[currentRow, 2] = textBox3.Text;
+                    wikiArray[currentRow, 3] = textBox4.Text;
+                    Added = true; // set added flag to true
+                    currentRow++; // increment
                 }
-
-                // Move to next row
-                currentRow++;
-                MessageBox.Show("Row " + currentRow + " added successfully!");
-
+                // if all textboxes were filled properly
+                if (Added)
+                {
+                    InitializeListView(listView); // update listview
+                    btnClear_Click(sender, e); // clear the textboxes
+                    toolStripStatusLabel1.Text = "The item was succesfully added to the list, index: " + (currentRow - 1);
+                }
+                // if not all textboxes were filled properly
+                else
+                {
+                    MessageBox.Show("Make sure you fill all the textboxes!");
+                    toolStripStatusLabel1.Text = "make sure you fill all the textboxes!";
+                }
             }
+            // if max limit in the array is reached
             else
             {
                 MessageBox.Show("2D Array is full!");
+                toolStripStatusLabel1.Text = "2D Array is full!";
             }
-            BubbleSort();
-            DisplayListViewArray();
 
         }
 
-        private void listView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-           
-        }
+        
 
+
+        // method to handle saving records to a file
         private void button3_Click(object sender, EventArgs e)
         {
             // 9.10 Save Button
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "dat file| *.dat";
-            saveFileDialog.Title = "Save a DAT file";
-            saveFileDialog.InitialDirectory = Application.StartupPath;
-            saveFileDialog.DefaultExt = "dat";
-            saveFileDialog.ShowDialog();
+            SaveFileDialog saveFileDialog = new SaveFileDialog(); // Create a SaveFileDialog instance
+            saveFileDialog.Filter = "dat file| *.dat"; // Set filter for the file dialog (.dat file)
+            saveFileDialog.Title = "Save a DAT file"; // set the title for the file dialog
+            saveFileDialog.InitialDirectory = Application.StartupPath; // set directory for file dialog
+            saveFileDialog.DefaultExt = "dat"; // default extension (.dat files)
+            saveFileDialog.ShowDialog(); // show file dialog
             string fileName = saveFileDialog.FileName;
+
+            // check if the file name is not empty
             if (saveFileDialog.FileName != "")
             {
                 SaveRecords(fileName); // Save the file
@@ -111,14 +129,17 @@ namespace WikiApp
 
         }
 
+        // method to handle saving records to a file
         private void SaveRecords(string saveFileName)
         {
             try
             {
+                // open file stream for writing
                 using (var stream = File.Open(saveFileName, FileMode.Create))
                 {
                     using (var write = new BinaryWriter(stream, Encoding.UTF8, false))
                     {
+                        // write array data to the file
                         for (int x = 0; x < rows; x++)
                         {
                             for (int y = 0; y < columns; y++)
@@ -131,7 +152,7 @@ namespace WikiApp
             }
             catch (IOException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message); // display error messages
             }
         }
 
@@ -143,7 +164,7 @@ namespace WikiApp
         private void SwapRows(int row1, int row2)
         {
             // 9.6 seperate swap method
-            // Loop through each column in the rows being swapped
+            // loop through each column in the rows being swapped
             for (int j = 0; j < columns; j++)
             {
                 // Temporary variable to hold the value of the element being swapped
@@ -157,50 +178,53 @@ namespace WikiApp
         private void BubbleSort()
         {
             // 9.6 bubble sort
-            if (wikiArray == null)
+            try
             {
-                // Handle null array
-                return;
-            }
-
-            // 9.6 bubble sort
-            bool swapped; // to indicate if any swaps were made in the current pass
-            do
-            {
-                // reset the bool for the next pass
-                swapped = false;
-                // loop through each row except for the last one
-                for (int i = 0; i < rows - 1; i++)
+                if (currentRow > 1)
                 {
-                    // compare the names in the first column of the current row and the next row
-                    // if the current rows name is alphabetically after the next row's name, swap the rows
-                    if (wikiArray[i, 0] != null && wikiArray[i + 1, 0] != null && wikiArray[i, 0].CompareTo(wikiArray[i + 1, 0]) > 0)
+                    bool Swapped;
+                    do
                     {
-                        // swap the rows
-                        SwapRows(i, i + 1);
-                        // set the bool to true indicating that the swap was made
-                        swapped = true;
+                        Swapped = false; // initalise swap flag
+                        for (int j = 0; j < currentRow - 1; j++) // current total has to be -1 otherwise its out of bounds 
+                        {
+                            if (string.Compare(wikiArray[j, 0], wikiArray[j + 1, 0]) > 0) // compare adjacent elements
+                            {
+                                // swap elements if needed
+                                (wikiArray[j, 0], wikiArray[j + 1, 0]) = (wikiArray[j + 1, 0], wikiArray[j, 0]);    // Swap name
+                                (wikiArray[j, 1], wikiArray[j + 1, 1]) = (wikiArray[j + 1, 1], wikiArray[j, 1]);    // Swap category
+                                (wikiArray[j, 2], wikiArray[j + 1, 2]) = (wikiArray[j + 1, 2], wikiArray[j, 2]);    // Swap structure
+                                (wikiArray[j, 3], wikiArray[j + 1, 3]) = (wikiArray[j + 1, 3], wikiArray[j, 3]);    // Swap Definition
+                                Swapped = true; // set flag to true
+                            }
+                        }
                     }
+                    while (Swapped); // continue until no swaps are required
                 }
-                // continue loop until no more swaps are required
-            } while (swapped);
+            }
+            catch (Exception ex)
+            {
+                toolStripStatusLabel1.Text = ex.Message; // handle exceptions
+            }
         }
+    
 
 
-
+        // method to handle loading records from a file
         private void button6_Click(object sender, EventArgs e)
         {
             // 9.11 Load Button
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = Application.StartupPath;
-            openFileDialog.Filter = "dat file| *.dat";
-            openFileDialog.Title = "Open a DAT file";
+            OpenFileDialog openFileDialog = new OpenFileDialog(); // Create an OpenFileDialog instance
+            openFileDialog.InitialDirectory = Application.StartupPath; // Set initial directory for the file dialog
+            openFileDialog.Filter = "dat file| *.dat";  // set filter for file dialog
+            openFileDialog.Title = "Open a DAT file"; // set title
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 OpenRecords(openFileDialog.FileName); // open file
             }
         }
 
+        // method to handle loading records from a file
         private void OpenRecords(string openFileName)
         {
             if (File.Exists(openFileName))
@@ -209,41 +233,47 @@ namespace WikiApp
                 {
                     using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
                     {
+                        currentRow = 0; // reset current row before loading new data
                         while (stream.Position < stream.Length)
                         {
                             for (int y = 0; y < columns; y++)
                             {
                                 wikiArray[currentRow, y] = reader.ReadString();
                             }
-                            currentRow++;
+                            currentRow++; // increment
                         }
 
                         // read data
                     }
                 }
             }
+            InitializeListView(listView); // Refresh the ListView after loading
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            // Check if a row is selected
-            if (currentRow >= 0 && currentRow < rows)
+            // 9.3 edit button
+            // Check if an item is selected and textboxes are not empty
+            if (listView.SelectedIndices.Count > 0 && !string.IsNullOrEmpty(textBox1.Text) && !string.IsNullOrEmpty(textBox2.Text) && !string.IsNullOrEmpty(textBox3.Text) && !string.IsNullOrEmpty(textBox4.Text))
             {
-                // Update the wikiArray with the new values from the textboxes
-                wikiArray[currentRow, 0] = textBox1.Text;
-                wikiArray[currentRow, 1] = textBox2.Text;
-                wikiArray[currentRow, 2] = textBox3.Text;
-                wikiArray[currentRow, 3] = textBox4.Text;
+                int selectedIndex = listView.SelectedIndices[0];  // Get the index of the selected item
+                wikiArray[selectedIndex, 0] = textBox1.Text;      // update values in the array
+                wikiArray[selectedIndex, 1] = textBox2.Text;
+                wikiArray[selectedIndex, 2] = textBox3.Text;
+                wikiArray[selectedIndex, 3] = textBox4.Text;
 
-                // Refresh the ListView to reflect the changes
-                DisplayListViewArray();
-
-                // Provide feedback to the user
-                MessageBox.Show("Row " + (currentRow + 1) + " updated successfully!");
+                // update listview and clear textboxes
+                InitializeListView(listView);
+                btnClear_Click(sender, e);
+                toolStripStatusLabel1.Text = "Succesfully edited item at index: " + selectedIndex;
+            }
+            else if (listView.SelectedIndices.Count == 0)
+            {
+                toolStripStatusLabel1.Text = "Could not edit item as there is no item selected.";
             }
             else
             {
-                MessageBox.Show("Please select a row to edit.");
+                toolStripStatusLabel1.Text = "Could not edit item as textboxes for data are empty.";
             }
         }
 
@@ -251,47 +281,33 @@ namespace WikiApp
         {
             // 9.4 delete button
 
-            // Display Message if no items selected to delete
-            if (listView.SelectedItems.Count == 0)
+            if (listView.SelectedIndices.Count > 0) // Check if an item is selected
             {
-                MessageBox.Show("You have not selected anything to delete!");
-            }
+                int selectedIndex = listView.SelectedIndices[0]; // get the index of the selected item
 
-            // Check if there's an item selected in the ListView
-            if (listView.SelectedItems.Count > 0)
-            {
-                // Assuming that the first selected item is the one to be deleted
-                int selectedIndex = listView.SelectedIndices[0];
+                // Prompt user for confirmation before deleting
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this item?", "Confirmation", MessageBoxButtons.YesNo);
 
-                // Shift everything after the selected one, up by one
-                for (int i = selectedIndex; i < rows - 1; i++)
+                // Check if the user gave permission
+                if (result == DialogResult.Yes)
                 {
-                    for (int j = 0; j < columns; j++)
+                    for (int i = 0; i < columns; i++)
                     {
-                        wikiArray[i, j] = wikiArray[i + 1, j];
+                        wikiArray[selectedIndex, i] = null; // delete item from array
                     }
+                    currentRow--; // update row count
+                    InitializeListView(listView); // update listview
+                    btnClear_Click(sender, e); // clear textboxes
+                    toolStripStatusLabel1.Text = "Succesfully deleted item at index: " + selectedIndex;
                 }
-
-                // clear last row
-                for (int j = 0; j < columns; j++)
+                else
                 {
-                    wikiArray[rows - 1, j] = "";
+                    toolStripStatusLabel1.Text = "User chose not to delete.";
                 }
-
-                // Decrease the currentRow if it's the last row
-                if (currentRow == rows - 1)
-                {
-                    currentRow--;
-                }
-
-                // Refresh the ListView
-                DisplayListViewArray();
-
-                MessageBox.Show("Row deleted successfully!");
             }
             else
             {
-                MessageBox.Show("Nothing has been selected to delete!");
+                toolStripStatusLabel1.Text = "Cannot delete item, no item selected and no data availiable.";
             }
         }
 
@@ -313,8 +329,9 @@ namespace WikiApp
                 textBox3.Clear();
                 textBox4.Clear();
 
-                // display popup when text boxes are cleared
-                MessageBox.Show("Textboxes cleared!");
+                textBox1.Focus(); // refocus
+
+                
                 toolStripStatusLabel1.Text = "TextBoxes cleared";
             }
 
@@ -322,9 +339,102 @@ namespace WikiApp
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-           
+            // 9.7 binary search
+            // method for performing binary search
+            string search = textBox5.Text;
+            if (!string.IsNullOrEmpty(search) && currentRow > 0) // check if the searchbox is not empty and data exists in the array
+            {
+                int foundIndex = -1; // initalise the index of the found item
+                int left = 0; // initalise the left boundary for binary search
+                int right = currentRow; // imitalise the right boundary for binary search
+                try
+                {
+                    // perform the binary search
+                    while (left <= right)
+                    {
+                        // find the middle index
+                        int mid = left + (right - left) / 2;
+                        string midselection = wikiArray[mid, 0]; // get the value at the middle index
+                        
+                        // check if the search term matches the middle value
+                        if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            foundIndex = mid; // set the index of the found item
+                            break;
+                        }
+
+                        // if the search term is less than the middle value, adjust the right boundary
+                        else if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) > 0)
+                        {
+                            right = mid - 1;
+                        }
+
+                        // if the search term is greater than the middle value, adjust the left boundary
+                        else if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) < 0)
+                        {
+                            // Adjusting the left bound
+                            left = mid + 1;
+                        }
+                    }
+                }
+                catch (Exception exc) 
+                {
+                    toolStripStatusLabel1.Text = exc.Message; // handle exceptions
+                }
+
+                // display search result
+                if (foundIndex != -1)
+                {
+                    // success messages
+                    MessageBox.Show("Item found! Binary search successful, index: " + foundIndex);
+                    toolStripStatusLabel1.Text = "Item found! Binary search successful, index: " + foundIndex;
+                }
+                else
+                {
+                    MessageBox.Show("ERROR 404: item not found :(");
+                    toolStripStatusLabel1.Text = "ERROR 404: item not found :(";
+                }
+            }
+            else
+            {
+                // cant search with an empty text box message
+                MessageBox.Show("can't search with an empty text box!");
+                toolStripStatusLabel1.Text = "can't search with an empty text box!";
+            }
+
 
         }
+
+
+       // a method to initalise the listview with array data
+        private void InitializeListView(ListView listView)
+        {
+            // 9.8 Display method
+            listView.Items.Clear(); // clear listview items
+            for (int i = 0; i < currentRow; i++)
+            {
+                ListViewItem item = new ListViewItem(wikiArray[i, 0]); // name
+                item.SubItems.Add(wikiArray[i, 1]); // category
+                listView.Items.Add(item);
+            }
+        }
+
+
+        // method to handle selecting an item from the listview
+        private void listView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // 9.9 Select definition from ListView
+            if (listView.SelectedIndices.Count > 0)
+            {
+                int selectedIndex = listView.SelectedIndices[0]; 
+                textBox1.Text = wikiArray[selectedIndex, 0];
+                textBox2.Text = wikiArray[selectedIndex, 1];
+                textBox3.Text = wikiArray[selectedIndex, 2];
+                textBox4.Text = wikiArray[selectedIndex, 3];
+            }
+        }
+
+
 
     }
 }
