@@ -293,9 +293,8 @@ namespace WikiApp
                 {
                     for (int i = 0; i < columns; i++)
                     {
-                        wikiArray[selectedIndex, i] = null; // delete item from array
+                        wikiArray[selectedIndex, i] = "~"; // delete item from array
                     }
-                    currentRow--; // update row count
                     InitializeListView(listView); // update listview
                     btnClear_Click(sender, e); // clear textboxes
                     toolStripStatusLabel1.Text = "Succesfully deleted item at index: " + selectedIndex;
