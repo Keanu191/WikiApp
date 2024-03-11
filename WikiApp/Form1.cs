@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -67,7 +68,7 @@ namespace WikiApp
             // 9.2 Add button
             if (currentRow < rows)
             {
-                bool Added = false; // flag to track if the item is successfully added
+                bool added = false; // flag to track if the item is successfully added
                 // check if the textboxes are empty
                 if (!string.IsNullOrEmpty(textBox1.Text) && !string.IsNullOrEmpty(textBox2.Text) && !string.IsNullOrEmpty(textBox3.Text) && !string.IsNullOrEmpty(textBox4.Text))
                 {
@@ -76,11 +77,11 @@ namespace WikiApp
                     wikiArray[currentRow, 1] = textBox2.Text;
                     wikiArray[currentRow, 2] = textBox3.Text;
                     wikiArray[currentRow, 3] = textBox4.Text;
-                    Added = true; // set added flag to true
+                    added = true; // set added flag to true
                     currentRow++; // increment
                 }
                 // if all textboxes were filled properly
-                if (Added)
+                if (added)
                 {
                     InitializeListView(listView); // update listview
                     btnClear_Click(sender, e); // clear the textboxes
@@ -101,8 +102,6 @@ namespace WikiApp
             }
 
         }
-
-        
 
 
         // method to handle saving records to a file
@@ -248,6 +247,8 @@ namespace WikiApp
                 }
             }
             InitializeListView(listView); // Refresh the ListView after loading
+            MessageBox.Show("Data file successfuly loaded!");
+            toolStripStatusLabel1.Text = "Data file successfully loaded!";
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
@@ -269,13 +270,17 @@ namespace WikiApp
             }
             else if (listView.SelectedIndices.Count == 0)
             {
+                MessageBox.Show("Could not edit item as there is no item selected.");
                 toolStripStatusLabel1.Text = "Could not edit item as there is no item selected.";
             }
             else
             {
+                MessageBox.Show("Could not edit item as textboxes for data are empty.");
                 toolStripStatusLabel1.Text = "Could not edit item as textboxes for data are empty.";
             }
         }
+
+        
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
@@ -293,21 +298,20 @@ namespace WikiApp
                 {
                     for (int i = 0; i < columns; i++)
                     {
-                        wikiArray[selectedIndex, i] = null; // delete item from array
+                        wikiArray[selectedIndex, i] = "~";   
                     }
-                    currentRow--; // update row count
                     InitializeListView(listView); // update listview
                     btnClear_Click(sender, e); // clear textboxes
                     toolStripStatusLabel1.Text = "Succesfully deleted item at index: " + selectedIndex;
                 }
                 else
                 {
-                    toolStripStatusLabel1.Text = "User chose not to delete.";
+                    toolStripStatusLabel1.Text = "nothing has been deleted.";
                 }
             }
             else
             {
-                toolStripStatusLabel1.Text = "Cannot delete item, no item selected and no data availiable.";
+                toolStripStatusLabel1.Text = "ERROR: Cannot delete item";
             }
         }
 
@@ -346,7 +350,7 @@ namespace WikiApp
             {
                 int foundIndex = -1; // initalise the index of the found item
                 int left = 0; // initalise the left boundary for binary search
-                int right = currentRow; // imitalise the right boundary for binary search
+                int right = currentRow; // initalise the right boundary for binary search
                 try
                 {
                     // perform the binary search
@@ -416,6 +420,7 @@ namespace WikiApp
                 ListViewItem item = new ListViewItem(wikiArray[i, 0]); // name
                 item.SubItems.Add(wikiArray[i, 1]); // category
                 listView.Items.Add(item);
+                //listView.Items.Add("~");
             }
         }
 
