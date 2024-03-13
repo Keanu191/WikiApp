@@ -42,17 +42,19 @@ namespace WikiApp
                 for (int j = 0; j < columns; j++)
                 {
                     // Initialize the element at [i, j] to an empty string
-                    wikiArray[i, j] = ""; 
+                    wikiArray[i, j] = "";
                 }
             }
+            currentRow = 0;
         }
 
         // method to fill the array and show it in the listview when the wiki app/form loads
         private void Form1_Load(object sender, EventArgs e)
         {
             // Initialise the array and display it in the ListView when the form loads
-            InitaliseArray();
-            InitializeListView(listView);
+            InitaliseArray(); // initalise array
+            BubbleSort(); // sort the array
+            InitializeListView(listView); // initalise list view
         }
 
         private void FormTwoDimAraysLoad(object sender, EventArgs e)
@@ -72,7 +74,7 @@ namespace WikiApp
                 if (!string.IsNullOrEmpty(textBox1.Text) && !string.IsNullOrEmpty(textBox2.Text) && !string.IsNullOrEmpty(textBox3.Text) && !string.IsNullOrEmpty(textBox4.Text))
                 {
                     // Assign textbox values to the corresponding position in the 2d array
-                    wikiArray[currentRow, 0] = textBox1.Text;
+                    wikiArray[currentRow, 0] = textBox1.Text.ToUpper(); // to upper as lowercase letters go to the bottom of the listview instead of being sorted
                     wikiArray[currentRow, 1] = textBox2.Text;
                     wikiArray[currentRow, 2] = textBox3.Text;
                     wikiArray[currentRow, 3] = textBox4.Text;
@@ -83,6 +85,7 @@ namespace WikiApp
                 if (Added)
                 {
                     InitializeListView(listView); // update listview
+                    BubbleSort();
                     btnClear_Click(sender, e); // clear the textboxes
                     toolStripStatusLabel1.Text = "The item was succesfully added to the list, index: " + (currentRow - 1);
                 }
@@ -102,7 +105,7 @@ namespace WikiApp
 
         }
 
-        
+
 
 
         // method to handle saving records to a file
@@ -121,10 +124,12 @@ namespace WikiApp
             if (saveFileDialog.FileName != "")
             {
                 SaveRecords(fileName); // Save the file
+                toolStripStatusLabel1.Text = "File successfully saved!";
             }
             else
             {
                 SaveRecords("Default.dat"); // Save a default file
+                toolStripStatusLabel1.Text = "Successfully saved!";
             }
 
         }
@@ -158,56 +163,49 @@ namespace WikiApp
 
         private void DisplayListViewArray()
         {
-         
+
         }
 
-        private void SwapRows(int row1, int row2)
+        private void SwapRows(int selectedIndex, int selectedIndex2)
         {
             // 9.6 seperate swap method
-            // loop through each column in the rows being swapped
-            for (int j = 0; j < columns; j++)
-            {
-                // Temporary variable to hold the value of the element being swapped
-                string swap = wikiArray[row1, j];
-                // Swap the elements by assigning the value of one element to the other
-                wikiArray[row1, j] = wikiArray[row2, j];
-                wikiArray[row2, j] = swap;
-            }
+            // method to swap rows in the array
+
+            String[] temp = new string[columns];
+
+            temp[0] = wikiArray[selectedIndex, 0];
+            temp[1] = wikiArray[selectedIndex, 1];
+            temp[2] = wikiArray[selectedIndex, 2];
+            temp[3] = wikiArray[selectedIndex, 3];
+
+            wikiArray[selectedIndex, 0] = wikiArray[selectedIndex2, 0];
+            wikiArray[selectedIndex, 1] = wikiArray[selectedIndex2, 1];
+            wikiArray[selectedIndex, 2] = wikiArray[selectedIndex2, 2];
+            wikiArray[selectedIndex, 3] = wikiArray[selectedIndex2, 3];
+
+            wikiArray[selectedIndex2, 0] = temp[0];
+            wikiArray[selectedIndex2, 1] = temp[1];
+            wikiArray[selectedIndex2, 2] = temp[2];
+            wikiArray[selectedIndex2, 3] = temp[3];
         }
 
         private void BubbleSort()
         {
             // 9.6 bubble sort
-            try
+            // method to perform bubble sort on the array
+            for (int j = 0; j < wikiArray.GetLength(0); j++)
             {
-                if (currentRow > 1)
+                for (int k = 0; k < wikiArray.GetLength(0) - 1; k++)
                 {
-                    bool Swapped;
-                    do
+                    if (!string.IsNullOrEmpty(wikiArray[k + 1, 0]) &&
+                        string.CompareOrdinal(wikiArray[k, 0], wikiArray[k + 1, 0]) > 0)
                     {
-                        Swapped = false; // initalise swap flag
-                        for (int j = 0; j < currentRow - 1; j++) // current total has to be -1 otherwise its out of bounds 
-                        {
-                            if (string.Compare(wikiArray[j, 0], wikiArray[j + 1, 0]) > 0) // compare adjacent elements
-                            {
-                                // swap elements if needed
-                                (wikiArray[j, 0], wikiArray[j + 1, 0]) = (wikiArray[j + 1, 0], wikiArray[j, 0]);    // Swap name
-                                (wikiArray[j, 1], wikiArray[j + 1, 1]) = (wikiArray[j + 1, 1], wikiArray[j, 1]);    // Swap category
-                                (wikiArray[j, 2], wikiArray[j + 1, 2]) = (wikiArray[j + 1, 2], wikiArray[j, 2]);    // Swap structure
-                                (wikiArray[j, 3], wikiArray[j + 1, 3]) = (wikiArray[j + 1, 3], wikiArray[j, 3]);    // Swap Definition
-                                Swapped = true; // set flag to true
-                            }
-                        }
+                        SwapRows(k, k + 1);
                     }
-                    while (Swapped); // continue until no swaps are required
                 }
             }
-            catch (Exception ex)
-            {
-                toolStripStatusLabel1.Text = ex.Message; // handle exceptions
-            }
         }
-    
+
 
 
         // method to handle loading records from a file
@@ -247,7 +245,9 @@ namespace WikiApp
                     }
                 }
             }
+            BubbleSort(); // sort
             InitializeListView(listView); // Refresh the ListView after loading
+            toolStripStatusLabel1.Text = "Successfully loaded file!";
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
@@ -257,15 +257,18 @@ namespace WikiApp
             if (listView.SelectedIndices.Count > 0 && !string.IsNullOrEmpty(textBox1.Text) && !string.IsNullOrEmpty(textBox2.Text) && !string.IsNullOrEmpty(textBox3.Text) && !string.IsNullOrEmpty(textBox4.Text))
             {
                 int selectedIndex = listView.SelectedIndices[0];  // Get the index of the selected item
-                wikiArray[selectedIndex, 0] = textBox1.Text;      // update values in the array
+                wikiArray[selectedIndex, 0] = textBox1.Text.ToUpper();      // update values in the array
                 wikiArray[selectedIndex, 1] = textBox2.Text;
                 wikiArray[selectedIndex, 2] = textBox3.Text;
                 wikiArray[selectedIndex, 3] = textBox4.Text;
 
-                // update listview and clear textboxes
+                BubbleSort(); // sort the array after editing
+
+                // update listview, clear textboxes and sort
                 InitializeListView(listView);
-                btnClear_Click(sender, e);
+                btnClear_Click(sender, e); // clear textboxes
                 toolStripStatusLabel1.Text = "Succesfully edited item at index: " + selectedIndex;
+
             }
             else if (listView.SelectedIndices.Count == 0)
             {
@@ -284,20 +287,30 @@ namespace WikiApp
             if (listView.SelectedIndices.Count > 0) // Check if an item is selected
             {
                 int selectedIndex = listView.SelectedIndices[0]; // get the index of the selected item
+                string selectedIndex2 = wikiArray[selectedIndex, 0];
+                string tilde = "~";
 
                 // Prompt user for confirmation before deleting
                 DialogResult result = MessageBox.Show("Are you sure you want to delete this item?", "Confirmation", MessageBoxButtons.YesNo);
 
+                if (selectedIndex2 == tilde)
+                {
+                    toolStripStatusLabel1.Text = "Empty cell cannot be deleted!";
+                }
                 // Check if the user gave permission
-                if (result == DialogResult.Yes)
+                else if (result == DialogResult.Yes)
                 {
                     for (int i = 0; i < columns; i++)
                     {
-                        wikiArray[selectedIndex, i] = "~"; // delete item from array
+                        wikiArray[selectedIndex, i] = "~"; // turn item into a tilde
                     }
+
+                    // remove the item from the listview
                     InitializeListView(listView); // update listview
                     btnClear_Click(sender, e); // clear textboxes
+                    currentRow--;
                     toolStripStatusLabel1.Text = "Succesfully deleted item at index: " + selectedIndex;
+                    
                 }
                 else
                 {
@@ -330,7 +343,7 @@ namespace WikiApp
 
                 textBox1.Focus(); // refocus
 
-                
+
                 toolStripStatusLabel1.Text = "TextBoxes cleared";
             }
 
@@ -345,7 +358,7 @@ namespace WikiApp
             {
                 int foundIndex = -1; // initalise the index of the found item
                 int left = 0; // initalise the left boundary for binary search
-                int right = currentRow; // imitalise the right boundary for binary search
+                int right = currentRow - 1; // initalise the right boundary for binary search
                 try
                 {
                     // perform the binary search
@@ -354,9 +367,10 @@ namespace WikiApp
                         // find the middle index
                         int mid = left + (right - left) / 2;
                         string midselection = wikiArray[mid, 0]; // get the value at the middle index
-                        
-                        // check if the search term matches the middle value
-                        if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) == 0)
+
+
+                            // check if the search term matches the middle value
+                            if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) == 0)
                         {
                             foundIndex = mid; // set the index of the found item
                             break;
@@ -376,7 +390,7 @@ namespace WikiApp
                         }
                     }
                 }
-                catch (Exception exc) 
+                catch (Exception exc)
                 {
                     toolStripStatusLabel1.Text = exc.Message; // handle exceptions
                 }
@@ -405,16 +419,24 @@ namespace WikiApp
         }
 
 
-       // a method to initalise the listview with array data
+        // a method to initalise the listview with array data
         private void InitializeListView(ListView listView)
         {
             // 9.8 Display method
             listView.Items.Clear(); // clear listview items
-            for (int i = 0; i < currentRow; i++)
+            BubbleSort();
+
+            for (int i = 0; i < wikiArray.GetLength(0); i++)
             {
-                ListViewItem item = new ListViewItem(wikiArray[i, 0]); // name
-                item.SubItems.Add(wikiArray[i, 1]); // category
-                listView.Items.Add(item);
+               if (!string.IsNullOrEmpty(wikiArray[i, 0]))
+                {
+                    string display = wikiArray[i, 0];
+                    string display2 = wikiArray[i, 1];
+
+                    ListViewItem item = new ListViewItem(display);
+                    item.SubItems.Add(display2);
+                    listView.Items.Add(item);
+                }
             }
         }
 
@@ -425,16 +447,18 @@ namespace WikiApp
             // 9.9 Select definition from ListView
             if (listView.SelectedIndices.Count > 0)
             {
-                int selectedIndex = listView.SelectedIndices[0]; 
+                int selectedIndex = listView.SelectedIndices[0];
                 textBox1.Text = wikiArray[selectedIndex, 0];
                 textBox2.Text = wikiArray[selectedIndex, 1];
                 textBox3.Text = wikiArray[selectedIndex, 2];
                 textBox4.Text = wikiArray[selectedIndex, 3];
+
+                textBox1.Focus(); // refocus
             }
+
+
+
         }
-
-
-
     }
 }
 
