@@ -361,6 +361,7 @@ namespace WikiApp
                 int foundIndex = -1; // initalise the index of the found item
                 int left = 0; // initalise the left boundary for binary search
                 int right = currentRow - 1; // initalise the right boundary for binary search
+
                 try
                 {
                     // perform the binary search
@@ -368,6 +369,8 @@ namespace WikiApp
                     {
                         // find the middle index
                         int mid = left + (right - left) / 2;
+
+                        
                         string midselection = wikiArray[mid, 0].Trim(); // get the value at the middle index
 
                         // compare the middle value with the search term
@@ -376,7 +379,9 @@ namespace WikiApp
                         if (comparisonResult == 0) // if the middle value matches the search term
                         { 
                             foundIndex = mid; // set the index of the found term
-                            break; // exit loop
+
+                           
+                            break; // exit loop 
                         }
                          
                         else if (comparisonResult > 0) // if the middle value is greater than the search term
@@ -413,8 +418,6 @@ namespace WikiApp
                 MessageBox.Show("can't search with an empty text box!");
                 toolStripStatusLabel1.Text = "can't search with an empty text box!";
             }
-
-
         }
 
 
