@@ -241,11 +241,13 @@ namespace WikiApp
                             currentRow++; // increment
                         }
 
+                        // Sort the array after loading
+                        BubbleSort();
+
                         // read data
                     }
                 }
             }
-            BubbleSort(); // sort
             InitializeListView(listView); // Refresh the ListView after loading
             toolStripStatusLabel1.Text = "Successfully loaded file!";
         }
@@ -353,7 +355,7 @@ namespace WikiApp
         {
             // 9.7 binary search
             // method for performing binary search
-            string search = textBox5.Text;
+            string search = textBox5.Text.Trim();
             if (!string.IsNullOrEmpty(search) && currentRow > 0) // check if the searchbox is not empty and data exists in the array
             {
                 int foundIndex = -1; // initalise the index of the found item
@@ -366,27 +368,24 @@ namespace WikiApp
                     {
                         // find the middle index
                         int mid = left + (right - left) / 2;
-                        string midselection = wikiArray[mid, 0]; // get the value at the middle index
+                        string midselection = wikiArray[mid, 0].Trim(); // get the value at the middle index
 
+                        // compare the middle value with the search term
+                        int comparisonResult = string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase);
 
-                            // check if the search term matches the middle value
-                            if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) == 0)
-                        {
-                            foundIndex = mid; // set the index of the found item
-                            break;
+                        if (comparisonResult == 0) // if the middle value matches the search term
+                        { 
+                            foundIndex = mid; // set the index of the found term
+                            break; // exit loop
                         }
-
-                        // if the search term is less than the middle value, adjust the right boundary
-                        else if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) > 0)
+                         
+                        else if (comparisonResult > 0) // if the middle value is greater than the search term
                         {
-                            right = mid - 1;
+                            right = mid - 1; // adjust the right boundary
                         }
-
-                        // if the search term is greater than the middle value, adjust the left boundary
-                        else if (string.Compare(midselection, search, StringComparison.OrdinalIgnoreCase) < 0)
+                        else // if the middle value is less then the search term
                         {
-                            // Adjusting the left bound
-                            left = mid + 1;
+                            left = mid + 1; // adjust the left boundary
                         }
                     }
                 }
@@ -426,7 +425,7 @@ namespace WikiApp
             listView.Items.Clear(); // clear listview items
             BubbleSort();
 
-            for (int i = 0; i < wikiArray.GetLength(0); i++)
+            for (int i = 0; i < currentRow; i++)
             {
                if (!string.IsNullOrEmpty(wikiArray[i, 0]))
                 {
